@@ -34,7 +34,7 @@ router.post('/', validateActionId, validateActionDescription, validateActionNote
         .catch(next)
 })
 
-router.put('/:id', validateActionId, validateActionDescription, validateActionNotes, validateProjectId, (req, res, next) => { // Problem about 400 status
+router.put('/:id', validateActionId, validateActionDescription, validateActionNotes, validateProjectId, (req, res, next) => {
     Actions.update(req.params.id, req.body)
         .then(updatedUser => {
             res.status(200).json(updatedUser)

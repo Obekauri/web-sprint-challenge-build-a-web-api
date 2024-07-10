@@ -49,23 +49,9 @@ function validateDescription(req, res, next) {
     }
 }
 
-/** function validateCompleted(req, res, next){
-    const { completed } = req.body
-    if(!completed){
-        res.status(400).json({
-            message: 'Completed part is missing'
-        })
-    }
-    else{
-        req.completed = completed
-        next()
-    }
-}**/
-
 module.exports = {
     logger,
     validateId,
     validateName,
     validateDescription,
-    //validateCompleted,
 };

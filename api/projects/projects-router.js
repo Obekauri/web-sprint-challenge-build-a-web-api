@@ -33,11 +33,17 @@ router.post('/', validateName, validateDescription, (req, res, next) => {
         .catch(next)
 })
 
-router.put('/:id', validateId, validateName, validateDescription, (req, res, next) => { // Problem about 400 status
+router.put('/:id', validateId, validateName, validateDescription, (req, res, next) => {
     Project.update(req.params.id, req.body)
         .then(updatedUser => {
-            res.status(200).json(updatedUser)
-            next()
+            if(req.body.completed === undefined){
+                res.status(400).json({
+                    message: 'error'
+                })
+            }else{
+                res.status(200).json(updatedUser)
+                next()
+            }
         })
         .catch(next)
 })
