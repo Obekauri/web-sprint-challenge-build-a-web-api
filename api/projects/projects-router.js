@@ -1,38 +1,70 @@
-const express = require('express')
-const {
-    validateUserId
-} = require('../projects/projects-middleware') 	//  Use  -  ctrl + space before typing
-
+const express = require('express');
 const router = express.Router();
 
-router.get('/api/projects', (req, res) => {
-    // My code here
+const Project = require('../projects/projects-model')
 
+const {
+    validateId,
+    validateName,
+    validateDescription,
+} = require('./projects-middleware')
+
+router.get('/', (req, res, next) => {
+    Project.get()
+        .then(listOfprojects => {
+            res.json(listOfprojects)
+        })
+        .catch(next)
 })
 
-router.get('/api/projects/:id', validateUserId, (req, res) => {
-    // My code here
-
+router.get('/:id', validateId, (req, res, next) => {
+    Project.get(req.params.id)
+        .then(project => {
+            res.json(project)
+        })
+        .catch(next)
 })
 
-router.post('/api/projects',  (req, res) => {
-    // My code here
-
+router.post('/', validateName, validateDescription, (req, res, next) => {
+    Project.insert(req.body)
+        .then(userName => {
+        res.status(201).json(userName)
+        })
+        .catch(next)
 })
 
-router.put('/api/projects/:id', validateUserId, (req, res) => {
-    // My code here
-
+router.put('/:id', validateId, validateName, validateDescription, (req, res, next) => { // Problem about 400 status
+    Project.update(req.params.id, req.body)
+        .then(updatedUser => {
+            res.status(200).json(updatedUser)
+            next()
+        })
+        .catch(next)
 })
 
-router.delete('/api/projects/:id', validateUserId, (req, res) => {
-    // My code here
-
+router.delete('/:id', validateId, (req, res, next) => {
+    Project.remove(req.params.id)
+        .then(() => {
+            res.status(200).json(req.project)
+        })
+        .catch(next)
 })
 
-router.get('/api/projects/:id/actions', validateUserId, (req, res) => {
-    // My code here
+router.get('/:id/actions', validateId, (req, res, next) => {
+    Project.getProjectActions(req.params.id)
+      .then(getPosts => {
+        res.json(getPosts)
+      })
+      .catch(next)
+  });
 
-})
 
-module.exports = router; // Those data will be received by server.js
+router.use((err, req, res, next) => { // eslint-disable-line
+    res.status(err.status || 500).json({
+      message: 'Something wrong inside routers',
+      err: err.message,
+      stack: err.stack,
+    })
+  })
+
+module.exports = router;

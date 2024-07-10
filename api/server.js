@@ -1,27 +1,25 @@
 const express = require('express');
+const { logger: projectsLogger } = require('./projects/projects-middleware');
+const { logger: actionsLogger } = require('./actions/actions-middlware');
 const server = express();
+const projectsRouter = require('./projects/projects-router');
+const actionsRouter = require('./actions/actions-router');
 
-// Configure your server here
-// Build your actions router in /api/actions/actions-router.js
-// Build your projects router in /api/projects/projects-router.js
-// Do NOT `server.listen()` inside this file!
+server.use(express.json());
 
+// Use middleware
+server.use(projectsLogger);
+server.use(actionsLogger);
 
-const { logger } = require('../api/projects/projects-middleware') // This need to change
-const usersRouter = require('../api/projects/projects-router') // This need to change
+// Use routers
+server.use('/api/projects', projectsRouter);
+server.use('/api/actions', actionsRouter);
 
-server.use(express.json())
-
-server.use(logger) // This need to change
-
-server.use('/api/users', usersRouter) // This need to change
-
+// Handle unknown routes
 server.use('*', (req, res) => {
     res.status(404).json({
-        message: 'Not found'
-    })
-})
-
-module.exports = server
+        message: 'Not found, try again'
+    });
+});
 
 module.exports = server;

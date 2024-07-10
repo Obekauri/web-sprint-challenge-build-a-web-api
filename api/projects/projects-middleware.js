@@ -1,39 +1,71 @@
-const User = require('../projects/projects-model')	// T I P: use - ctrl + space before typing
+const Project = require('../projects/projects-model')
 
 function logger(req, res, next) {
-    // My code here
-    
-    console.log('logger is working') // Check if it's working
-    next()
+    console.log(`${req.method} request to ${req.url}`);
+    next();
 }
 
-
-function validateUserId(req, res, next) {  // Possible async function
-    // My code here
-    
-    console.log('validateUserId is working') // Check if it's working
-    next()
+async function validateId(req, res, next){
+    try {
+        const projectId = await Project.get(req.params.id)
+        if(!projectId){
+            res.status(404).json({
+                message: 'Project id not found'
+            })
+        }else{
+            req.project = projectId
+            next()
+        }
+    }catch (err) {
+        res.status(500).json({
+            message: 'Something went wrong',
+            err: err.message,
+            stack: err.stack
+        })
+    }
 }
 
-function validateUser(req, res, next) {  // Possible async function
-    // My code here
-    
-    console.log('validateUser is working') // Check if it's working
-    next()
+function validateName(req, res, next) {
+    const { name } = req.body
+    if(!name || !name.trim()){
+      res.status(400).json({
+        message: 'missing required name'
+      })
+    }else{
+      req.name = name.trim()
+      next()
+    }
+}
+  
+function validateDescription(req, res, next) {
+    const { description } = req.body
+    if(!description || !description.trim()){
+      res.status(400).json({
+        message: "missing required text field"
+      })
+    }else{
+      req.text = description.trim()
+      next()
+    }
 }
 
-function validatePost(req, res, next) {  // Possible async function
-    // My code here
-    
-    console.log('validatePost is working') // Check if it's working
-    next()
-}
-
+/** function validateCompleted(req, res, next){
+    const { completed } = req.body
+    if(!completed){
+        res.status(400).json({
+            message: 'Completed part is missing'
+        })
+    }
+    else{
+        req.completed = completed
+        next()
+    }
+}**/
 
 module.exports = {
     logger,
-    validateUserId,
-    validateUser,
-    validatePost
-}
-
+    validateId,
+    validateName,
+    validateDescription,
+    //validateCompleted,
+};
