@@ -25,6 +25,43 @@ async function validateActionId(req, res, next){
     }
 }
 
+function validateProjectId(req, res, next){
+    const { project_id } = req.body
+    if(!project_id){
+        res.status(400).json({
+            message: 'Required field is missing'
+        })
+    }else{
+        req.project_id = project_id
+        next()
+    }
+}
+
+function validateActionDescription(req, res, next){
+    const { description } = req.body
+    if(!description || !description.trim()){
+        res.status(400).json({
+            message: 'Required field is missing'
+        })
+    }else{
+        req.description = description
+        next()
+    }
+}
+
+function validateActionNotes(req, res, next){
+    const { notes } = req.body
+    if(!notes || !notes.trim()){
+        res.status(400).json({
+            message: 'Required field is missing'
+        })
+    }else{
+        req.notes = notes
+        next()
+    }
+}
+
+
 
 /** function validateCompleted(req, res, next){
     const { completed } = req.body
@@ -42,4 +79,7 @@ async function validateActionId(req, res, next){
 module.exports = {
     logger,
     validateActionId,
+    validateActionDescription,
+    validateActionNotes,
+    validateProjectId
 };
